@@ -6,17 +6,20 @@ import {
   ArrowUpRight,
   CheckCircle2,
   X,
+  AlertTriangle,
 } from "lucide-react";
 import { CatalogPanel, puzzles } from "../features/catalog";
 import { BoardPanel } from "../features/board";
 import { AssistPanel } from "../features/assist";
 import { JournalPanel } from "../features/journal";
 import { GalleryPanel } from "../features/gallery";
+import { ReplayModal } from "../features/replay";
 import { useGame } from "./useGame";
 export function App() {
   const game = useGame();
   const [page, setPage] = useState<"play" | "gallery">("play");
   const [resetting, setResetting] = useState(false);
+  const [replayOpen, setReplayOpen] = useState(false);
   const open = (id: string) => {
     game.dispatch({ type: "open", id });
     game.clearMessage();
@@ -77,6 +80,12 @@ export function App() {
           </div>
           {page === "play" ? (
             <>
+              {game.document.warnings.length > 0 && (
+                <div className="warning-banner" role="status">
+                  <AlertTriangle size={16} />
+                  <span>{game.document.warnings.join(" ")}</span>
+                </div>
+              )}
               <div className="workspace">
                 <CatalogPanel document={game.document} onOpen={open} />
                 <BoardPanel
@@ -87,6 +96,7 @@ export function App() {
                   }
                   onUndo={() => game.dispatch({ type: "undo" })}
                   onReset={() => setResetting(true)}
+                  onReplay={() => setReplayOpen(true)}
                 />
                 <AssistPanel
                   puzzle={game.puzzle}
@@ -103,6 +113,10 @@ export function App() {
                   saveState={game.saveState}
                   onSave={game.save}
                   onOpen={open}
+                  onReplay={(id) => {
+                    if (id !== game.puzzle.id) open(id);
+                    setReplayOpen(true);
+                  }}
                 />
                 <button
                   className="collection-teaser"
@@ -146,6 +160,14 @@ export function App() {
           </footer>
         </main>
       </div>
+      {replayOpen && (
+        <ReplayModal
+          document={game.document}
+          puzzles={puzzles}
+          puzzle={game.puzzle}
+          onClose={() => setReplayOpen(false)}
+        />
+      )}
       {resetting && (
         <div className="modal-backdrop">
           <section

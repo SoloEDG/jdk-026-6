@@ -9,6 +9,8 @@ function make(
 ): Puzzle {
   return {
     id,
+    // 题目内容版本：导出的回放会携带它，导入时与当前题库核对
+    version: "1",
     title,
     level,
     collection,

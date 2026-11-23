@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Clock3, CheckCircle2, MousePointer2 } from "lucide-react";
+import { Clock3, CheckCircle2, MousePointer2, Film } from "lucide-react";
 import { clueSet } from "../../../shared/clues";
 import type { Puzzle, Session, Tool } from "../../../shared/types";
 import { completion } from "../../../shared/document";
@@ -12,12 +12,14 @@ export function BoardPanel({
   onMark,
   onUndo,
   onReset,
+  onReplay,
 }: {
   puzzle: Puzzle;
   session: Session;
   onMark: (i: number, t: Tool) => void;
   onUndo: () => void;
   onReset: () => void;
+  onReplay: () => void;
 }) {
   const [tool, setTool] = useState<Tool>("filled");
   const clues = clueSet(puzzle.size, puzzle.solution);
@@ -34,12 +36,30 @@ export function BoardPanel({
             <span className="level-tag">{puzzle.level}</span>
           </h1>
         </div>
-        <div className="timer">
-          <Clock3 size={15} />
-          {Math.floor(session.seconds / 60)
-            .toString()
-            .padStart(2, "0")}
-          :{(session.seconds % 60).toString().padStart(2, "0")}
+        <div className="board-heading-right">
+          <button
+            className="replay-entry"
+            onClick={onReplay}
+            disabled={session.timeline.length === 0}
+            title={
+              session.timeline.length === 0
+                ? "本题还没有可回放的操作"
+                : "回看这局的完整解题过程"
+            }
+          >
+            <Film size={15} />
+            解题回放
+            {session.timeline.length > 0 && (
+              <small>{session.timeline.length} 个事件</small>
+            )}
+          </button>
+          <div className="timer">
+            <Clock3 size={15} />
+            {Math.floor(session.seconds / 60)
+              .toString()
+              .padStart(2, "0")}
+            :{(session.seconds % 60).toString().padStart(2, "0")}
+          </div>
         </div>
       </div>
       <BoardToolbar

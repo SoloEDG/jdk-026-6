@@ -3,6 +3,7 @@ export function registerSolve(
   document: GameDocument,
   puzzle: Puzzle,
   session: Session,
+  finishedAt?: number,
 ): GameDocument {
   if (!session.solved || document.sessions[puzzle.id]?.solved) return document;
   return {
@@ -14,7 +15,7 @@ export function registerSolve(
         seconds: session.seconds,
         hints: session.hints,
         checks: session.checks,
-        finishedAt: Date.now(),
+        finishedAt: finishedAt ?? Date.now(),
       },
       ...document.records,
     ],

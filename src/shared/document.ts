@@ -9,14 +9,19 @@ export function newSession(puzzle: Puzzle): Session {
     seconds: 0,
     solved: false,
     updatedAt: Date.now(),
+    timeline: [],
+    snapshots: [],
+    seq: 0,
+    mutationCount: 0,
   };
 }
 export function newDocument(puzzle: Puzzle): GameDocument {
   return {
-    version: 1,
+    version: 2,
     activeId: puzzle.id,
     sessions: { [puzzle.id]: newSession(puzzle) },
     records: [],
+    warnings: [],
   };
 }
 export function completion(session: Session): number {

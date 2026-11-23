@@ -25,6 +25,19 @@ export function useGame() {
     return () => clearInterval(timer);
   }, []);
   useEffect(() => {
+    // 真实停顿：页面隐藏/显示各自写入一个回放事件，顺序与时长都可还原
+    const onVisibility = () =>
+      dispatch({
+        type:
+          globalThis.document.visibilityState === "visible"
+            ? "resume"
+            : "pause",
+      });
+    globalThis.document.addEventListener("visibilitychange", onVisibility);
+    return () =>
+      globalThis.document.removeEventListener("visibilitychange", onVisibility);
+  }, []);
+  useEffect(() => {
     if (!allowSave.current) return;
     const timer = setTimeout(
       () =>
